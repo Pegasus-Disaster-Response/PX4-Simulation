@@ -22,6 +22,14 @@ PX4 is highly portable, OS-independent and supports Linux, NuttX and MacOS out o
   * many more experimental types (Blimps, Boats, Submarines, High Altitude Balloons, Spacecraft, etc)
 * Releases: [Downloads](https://github.com/PX4/PX4-Autopilot/releases)
 
+## How to run
+
+In the terminal, cd into the PX4-Simulation folder and run:
+make px4_sitl vtol1_baylands
+
+This will open the vtol1 model (basic vtol with a VLP16 Lidar added to it) in the Baylands world in Gazebo Harmonic.
+To view the Lidar data, you will need to make sure you have the adequate PX4 to ROS2 bridge packages in your desired ROS2 workspace to connect Gazebo topics into ROS.
+
 ## Releases
 
 Release notes and supporting information for PX4 releases can be found on the [Developer Guide](https://docs.px4.io/main/en/releases/).
@@ -37,12 +45,6 @@ This [Developer Guide](https://docs.px4.io/main/en/development/development.html)
 
 Developers should read the [Guide for Contributions](https://docs.px4.io/main/en/contribute/).
 See the [forum and chat](https://docs.px4.io/main/en/#getting-help) if you need help!
-
-## Maintenance Team
-
-See the latest list of maintainers on [MAINTAINERS](MAINTAINERS.md) file at the root of the project.
-
-For the latest stats on contributors please see the latest stats for the Dronecode ecosystem in our project dashboard under [LFX Insights](https://insights.lfx.linuxfoundation.org/foundation/dronecode). For information on how to update your profile and affiliations please see the following support link on how to [Complete Your LFX Profile](https://docs.linuxfoundation.org/lfx/my-profile/complete-your-lfx-profile). Dronecode publishes a yearly snapshot of contributions and achievements on its [website under the Reports section](https://dronecode.org).
 
 ## Supported Hardware
 
