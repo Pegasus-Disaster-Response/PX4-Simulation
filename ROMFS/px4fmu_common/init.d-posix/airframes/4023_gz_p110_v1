@@ -146,7 +146,7 @@ param set-default SIM_GZ_SV_FUNC5 205   # right_rudder → servo_4
 
 # ── VTOL transition ───────────────────────────────────────────────────────────
 param set-default VT_F_TRANS_THR   0.5
-param set-default VT_FWD_THRUST_EN 4
+param set-default VT_FWD_THRUST_EN 0    # Disable forward motors in MC mode
 
 # ── Fixed-wing controller tuning ─────────────────────────────────────────────
 param set-default NPFG_PERIOD  12
@@ -164,20 +164,65 @@ param set-default FW_T_SINK_MAX  2.7
 param set-default FW_T_SINK_MIN  2.2
 
 # ── Multicopter controller tuning ────────────────────────────────────────────
-param set-default MC_AIRMODE    1
-param set-default MC_ROLLRATE_P 0.2
-param set-default MC_PITCHRATE_P 0.2
+param set-default MC_AIRMODE 1
 
-param set-default MC_YAW_P      1.6
+# Attitude angle gains (high pitch authority for rear motor lag)
+param set-default MC_ROLL_P    6.0
+param set-default MC_PITCH_P   8.0
+param set-default MC_YAW_P     2.2
+
+# Rate controller gains (high pitch response, low I to prevent windup)
+param set-default MC_ROLLRATE_P  0.18
+param set-default MC_ROLLRATE_I  0.015
+param set-default MC_ROLLRATE_D  0.0006
+param set-default MC_PITCHRATE_P 0.27
+param set-default MC_PITCHRATE_I 0.03
+param set-default MC_PITCHRATE_D 0.0015
+param set-default MC_PITCHRATE_FF 0.22
+param set-default MC_YAWRATE_P   0.18
+param set-default MC_YAWRATE_I   0.04
+
+# Rate limits to prevent aggressive maneuvers
+param set-default MC_ROLLRATE_MAX  120
+param set-default MC_PITCHRATE_MAX 150
+param set-default MC_YAWRATE_MAX   60
+
+# Hover throttle (adjust based on vehicle weight)
+param set-default MPC_THR_HOVER  0.55
+param set-default MPC_THR_MIN    0.12
+param set-default MPC_MANTHR_MIN 0.08
 
 # ── Position control ─────────────────────────────────────────────────────────
 param set-default MIS_TAKEOFF_ALT   10
 
-param set-default MPC_XY_P         0.8
-param set-default MPC_XY_VEL_P_ACC 3
-param set-default MPC_XY_VEL_I_ACC 4
-param set-default MPC_XY_VEL_D_ACC 0.1
+# Reduce position control aggressiveness to avoid oscillations
+param set-default MPC_XY_P         0.25
+param set-default MPC_XY_VEL_P_ACC 0.35
+param set-default MPC_XY_VEL_I_ACC 0.15
+param set-default MPC_XY_VEL_D_ACC 0.005
+param set-default MPC_XY_VEL_MAX   2.0
+param set-default MPC_XY_CRUISE    1.5
+
+# Acceleration and jerk limits for smooth movement
+param set-default MPC_ACC_HOR_MAX  1.5
+param set-default MPC_ACC_HOR      1.5
+param set-default MPC_JERK_AUTO    3.0
+
+# Vertical velocity control (smoother takeoff)
+param set-default MPC_Z_P          0.8
+param set-default MPC_Z_VEL_P_ACC  3.0
+param set-default MPC_Z_VEL_I_ACC  1.0
+
+# Tilt angle limits (prevent excessive pitch during takeoff)
+param set-default MPC_TILTMAX_AIR  20
+param set-default MPC_TILTMAX_LND  15
+
+# Takeoff/Land speeds (slower, smoother spool-up)
+param set-default MPC_TKO_SPEED    0.8
+param set-default MPC_LAND_SPEED   0.7
+param set-default MPC_TKO_RAMP_T   1.0
 
 # ── Navigation ───────────────────────────────────────────────────────────────
 param set-default NAV_ACC_RAD 5
 param set-default NAV_DLL_ACT 2
+
