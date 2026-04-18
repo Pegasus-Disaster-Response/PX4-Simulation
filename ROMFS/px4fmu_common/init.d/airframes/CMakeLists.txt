@@ -139,6 +139,7 @@ if(CONFIG_MODULES_VTOL_ATT_CONTROL)
 		13030_generic_vtol_quad_tiltrotor
 		13200_generic_vtol_tailsitter
 		13300_p110_v1
+		13400_p110_v2
 
 		# [22000, 22999] Custom VTOL models
 
