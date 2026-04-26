@@ -36,7 +36,7 @@ param set-default MAV_TYPE 22     # MAV_TYPE_VTOL_FIXEDROTOR
 
 # ── Control Allocator: motor geometry ─────────────────────────────────────────
 # Positions are in the PX4 body frame (FRD: +X fwd, +Y right, +Z down)
-# derived from p110_v1 SDF geometry, offset to CG (at Gz X=-1.5 from origin).
+# derived from p110_v2 SDF geometry, offset to CG (at Gz X=-1.5 from origin).
 # Gz→PX4 frame: PX4_PX = Gz_X - CG_X,  PX4_PY = -Gz_Y
 # KM sign: +0.05 = CCW (viewed from above),  -0.05 = CW
 
@@ -45,23 +45,23 @@ param set-default CA_ROTOR_COUNT 6
 
 # --- Vertical hover rotors ---
 # front-right   CCW
-param set-default CA_ROTOR0_PX  0.91
+param set-default CA_ROTOR0_PX  0.89
 param set-default CA_ROTOR0_PY  0.76
 param set-default CA_ROTOR0_KM  0.05
 
-# rear-left     CCW
-param set-default CA_ROTOR1_PX -1.09
+# front-left    CCW
+param set-default CA_ROTOR1_PX  0.89
 param set-default CA_ROTOR1_PY -0.76
 param set-default CA_ROTOR1_KM  0.05
 
-# front-left    CW
-param set-default CA_ROTOR2_PX  0.91
-param set-default CA_ROTOR2_PY -0.76
+# rear-right    CW
+param set-default CA_ROTOR2_PX  -0.645
+param set-default CA_ROTOR2_PY  0.76
 param set-default CA_ROTOR2_KM -0.05
 
-# rear-right    CW
-param set-default CA_ROTOR3_PX -1.09
-param set-default CA_ROTOR3_PY  0.76
+# rear-left     CW
+param set-default CA_ROTOR3_PX  -0.645
+param set-default CA_ROTOR3_PY -0.76
 param set-default CA_ROTOR3_KM -0.05
 
 # --- Forward thrust motors (AX=1 = thrust along +X / forward) ---
