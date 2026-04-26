@@ -8,9 +8,9 @@
 #
 # SDF motor → airframe mapping (motorNumber is 0-indexed in SDF):
 #   SIM_GZ_EC_FUNC1 (Motor1) → motorNumber 0  = rotor_0          vertical front-right
-#   SIM_GZ_EC_FUNC2 (Motor2) → motorNumber 1  = rotor_1          vertical front-left
-#   SIM_GZ_EC_FUNC3 (Motor3) → motorNumber 2  = rotor_2          vertical rear-right
-#   SIM_GZ_EC_FUNC4 (Motor4) → motorNumber 3  = rotor_3          vertical rear-left
+#   SIM_GZ_EC_FUNC2 (Motor2) → motorNumber 1  = rotor_1          vertical rear-left
+#   SIM_GZ_EC_FUNC3 (Motor3) → motorNumber 2  = rotor_2          vertical front-left
+#   SIM_GZ_EC_FUNC4 (Motor4) → motorNumber 3  = rotor_3          vertical rear-right
 #   SIM_GZ_EC_FUNC5 (Motor5) → motorNumber 4  = left_forward_rotor
 #   SIM_GZ_EC_FUNC6 (Motor6) → motorNumber 5  = right_forward_rotor
 #
@@ -54,19 +54,19 @@ param set-default CA_ROTOR_COUNT 6
 # Vertical hover rotors
 param set-default CA_ROTOR0_PX  0.89
 param set-default CA_ROTOR0_PY  0.76
-param set-default CA_ROTOR0_KM  0.05   # CCW
+param set-default CA_ROTOR0_KM  0.048  # CCW (slightly reduced to counter CW yaw bias)
 
 param set-default CA_ROTOR1_PX  -0.645
 param set-default CA_ROTOR1_PY  -0.76
-param set-default CA_ROTOR1_KM 0.05   # CCW
+param set-default CA_ROTOR1_KM  0.048  # CCW (slightly reduced to counter CW yaw bias)
 
 param set-default CA_ROTOR2_PX  0.89
-param set-default CA_ROTOR2_PY -0.76
-param set-default CA_ROTOR2_KM  -0.05   # CW
+param set-default CA_ROTOR2_PY  -0.76
+param set-default CA_ROTOR2_KM  -0.052  # CW (slightly increased to counter CW yaw bias)
 
 param set-default CA_ROTOR3_PX  -0.645
-param set-default CA_ROTOR3_PY 0.76
-param set-default CA_ROTOR3_KM -0.05   # CW
+param set-default CA_ROTOR3_PY  0.76
+param set-default CA_ROTOR3_KM  -0.052  # CW (slightly increased to counter CW yaw bias)
 
 # Forward thrust motors (AX=1 = thrust along body +X)
 # Inward-spinning convention: prop tops rotate toward fuselage centerline.
@@ -145,8 +145,11 @@ param set-default SIM_GZ_SV_FUNC4 204   # left_rudder  → servo_3
 param set-default SIM_GZ_SV_FUNC5 205   # right_rudder → servo_4
 
 # ── VTOL transition ───────────────────────────────────────────────────────────
-param set-default VT_F_TRANS_THR   0.5
-param set-default VT_FWD_THRUST_EN 0    # Disable forward motors in MC mode
+param set-default VT_F_TRANS_THR    0.5   # Forward thrust throttle needed to trigger transition
+param set-default VT_FWD_THRUST_EN  0    # Enable forward motors for stable transition
+param set-default VT_TRANS_MIN_TM   4.0   # Minimum transition time (s)
+param set-default VT_TRANS_P2_DUR   4.0   # Phase 2 transition duration (s)
+param set-default VT_TRANS_TIMEOUT  15.0  # Transition timeout before quad-chute (s)
 
 # ── Fixed-wing controller tuning ─────────────────────────────────────────────
 param set-default NPFG_PERIOD  12
@@ -163,71 +166,50 @@ param set-default FW_T_CLMB_MAX 8
 param set-default FW_T_SINK_MAX  2.7
 param set-default FW_T_SINK_MIN  2.2
 
-# ── Multicopter controller tuning ────────────────────────────────────────────
+# ── Multicopter / position tuning ───────────────────────────────────────────
+# Keep this section intentionally minimal to avoid cross-coupled tuning issues.
+# Start from proven vtol1-style values and only keep a few model-specific limits.
 param set-default MC_AIRMODE 1
+param set-default MC_ROLLRATE_P 0.3
+param set-default MC_PITCH_P 5.0
+param set-default MC_PITCHRATE_P 0.20
+param set-default MC_PITCHRATE_I 0.05
+param set-default MC_PITCHRATE_D 0.004
+param set-default MC_YAW_P 1.8
+param set-default MC_YAW_WEIGHT 0.7
+param set-default MC_YAWRATE_P 0.26
+param set-default MC_YAWRATE_I 0.11
+param set-default MC_YR_INT_LIM 0.30
+param set-default MC_YAWRATE_D 0.002
+param set-default MC_YAWRATE_MAX 120
+param set-default MPC_MAN_Y_MAX 120
 
-# Attitude angle gains (align with reference p110_v2 tuning)
-param set-default MC_ROLL_P    6.0
-param set-default MC_PITCH_P   8.0
-param set-default MC_YAW_P     1.6
+param set-default MIS_TAKEOFF_ALT 10
+param set-default MPC_XY_P 0.35
+param set-default MPC_XY_VEL_P_ACC 1.0
+param set-default MPC_XY_VEL_I_ACC 0.12
+param set-default MPC_XY_VEL_D_ACC 0.2
+param set-default MPC_XY_VEL_MAX 1.0
+param set-default MPC_XY_CRUISE 0.8
 
-# Rate controller gains (match reference p110_v2 for stability)
-param set-default MC_ROLLRATE_P  0.3
-param set-default MC_ROLLRATE_I  0.015
-param set-default MC_ROLLRATE_D  0.0006
-param set-default MC_PITCHRATE_P 0.27
-param set-default MC_PITCHRATE_I 0.03
-param set-default MC_PITCHRATE_D 0.0015
-param set-default MC_PITCHRATE_FF 0.22
-param set-default MC_YAWRATE_P   0.18
-param set-default MC_YAWRATE_I   0.04
+# Keep hover-thrust estimator active to absorb model/thrust mismatch in SITL.
+param set-default MPC_THR_HOVER 0.55
+param set-default MPC_USE_HTE 1
+param set-default MPC_THR_XY_MARG 0.45
 
-# Rate limits to prevent aggressive maneuvers
-param set-default MC_ROLLRATE_MAX  120
-param set-default MC_PITCHRATE_MAX 150
-param set-default MC_YAWRATE_MAX   60
+# Conservative vertical auto speeds for stable altitude capture.
+param set-default MPC_Z_P 1.3
+param set-default MPC_Z_V_AUTO_UP 1.4
+param set-default MPC_Z_V_AUTO_DN 0.8
 
-# Hover throttle (adjusted up slightly for corrected geometry/CG balance)
-param set-default MPC_THR_HOVER  0.60
-param set-default MPC_THR_MIN    0.12
-param set-default MPC_MANTHR_MIN 0.08
-
-# ── Position control ─────────────────────────────────────────────────────────
-param set-default MIS_TAKEOFF_ALT   10
-
-# Reduce position control aggressiveness to avoid oscillations
-# param set-default MPC_XY_P         0.25
-# param set-default MPC_XY_VEL_P_ACC 0.35
-# param set-default MPC_XY_VEL_I_ACC 0.15
-# param set-default MPC_XY_VEL_D_ACC 0.005
-# param set-default MPC_XY_VEL_MAX   2.0
-# param set-default MPC_XY_CRUISE    1.5
-
-param set-default MPC_XY_P 0.8
-param set-default MPC_XY_VEL_P_ACC 3
-param set-default MPC_XY_VEL_I_ACC 4
-param set-default MPC_XY_VEL_D_ACC 0.1
-
-# Acceleration and jerk limits for smooth movement
-# param set-default MPC_ACC_HOR_MAX  1.5
-# param set-default MPC_ACC_HOR      1.5
-# param set-default MPC_JERK_AUTO    3.0
-
-# Vertical velocity control (more authority at liftoff)
-# param set-default MPC_Z_P          0.8
-# param set-default MPC_Z_VEL_P_ACC  4.0
-# param set-default MPC_Z_VEL_I_ACC  1.2
-
-# Tilt angle limits (prevent excessive pitch during takeoff)
-# param set-default MPC_TILTMAX_AIR  20
-# param set-default MPC_TILTMAX_LND  15
-
-# Takeoff/Land speeds (faster spool-up to avoid stalled liftoff)
-# param set-default MPC_TKO_SPEED    1.2
-# param set-default MPC_LAND_SPEED   0.7
-# param set-default MPC_TKO_RAMP_T   0.35
+# Constrain horizontal authority to prevent circular glide oscillations at hold.
+param set-default MPC_ACC_HOR 0.8
+param set-default MPC_ACC_HOR_MAX 0.8
+param set-default MPC_JERK_AUTO 1.5
+param set-default MPC_TILTMAX_AIR 8
 
 # ── Navigation ───────────────────────────────────────────────────────────────
 param set-default NAV_ACC_RAD 5
 param set-default NAV_DLL_ACT 2
+param set-default WV_EN 0
 
